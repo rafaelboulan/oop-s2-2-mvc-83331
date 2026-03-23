@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../onvatenter/onvatenter.csproj" />
+	  <ProjectReference Include="../onvatenter.Models/onvatenter.Models.csproj" />
   </ItemGroup>
 
 </Project>
