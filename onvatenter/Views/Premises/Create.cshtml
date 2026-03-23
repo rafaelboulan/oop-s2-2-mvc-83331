@@ -1,0 +1,32 @@
+@model Premises
+@{
+    ViewData["Title"] = "Create Premises";
+}
+
+<h1>Create Premises</h1>
+
+<form method="post">
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="Name" name="Name" required>
+    </div>
+    <div class="mb-3">
+        <label for="Address" class="form-label">Address</label>
+        <input type="text" class="form-control" id="Address" name="Address" required>
+    </div>
+    <div class="mb-3">
+        <label for="Town" class="form-label">Town</label>
+        <input type="text" class="form-control" id="Town" name="Town" required>
+    </div>
+    <div class="mb-3">
+        <label for="RiskRating" class="form-label">Risk Rating</label>
+        <select class="form-select" id="RiskRating" name="RiskRating" required>
+            <option value="">Select</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/Premises" class="btn btn-secondary">Cancel</a>
+</form>

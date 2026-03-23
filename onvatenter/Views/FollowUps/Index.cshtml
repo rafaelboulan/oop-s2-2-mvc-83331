@@ -1,0 +1,33 @@
+@model IEnumerable<FollowUp>
+@{
+    ViewData["Title"] = "Follow-ups";
+}
+
+<h1>Follow-ups</h1>
+<a href="/FollowUps/Create" class="btn btn-primary mb-3">Add New</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Inspection</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var f in Model ?? new List<FollowUp>())
+        {
+            <tr>
+                <td>@f.Inspection?.Id</td>
+                <td>@f.DueDate.ToString("yyyy-MM-dd")</td>
+                <td>@f.Status</td>
+                <td>
+                    <a href="/FollowUps/Details/@f.Id" class="btn btn-sm btn-info">View</a>
+                    <a href="/FollowUps/Edit/@f.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="/FollowUps/Delete/@f.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

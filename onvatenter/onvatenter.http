@@ -1,0 +1,6 @@
+@onvatenter_HostAddress = http://localhost:5225
+
+GET {{onvatenter_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
