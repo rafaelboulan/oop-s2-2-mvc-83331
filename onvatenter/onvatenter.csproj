@@ -1,6 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-  </PropertyGroup>
-  <!-- This is a placeholder project folder. All code has been moved to onvatenter.Web and onvatenter.Models -->
-</Project>
