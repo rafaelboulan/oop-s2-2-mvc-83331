@@ -1,0 +1,33 @@
+@model FollowUp
+@{
+    ViewData["Title"] = "Create Follow-up";
+}
+
+<h1>Create Follow-up</h1>
+
+<form method="post">
+    <div class="mb-3">
+        <label for="InspectionId" class="form-label">Inspection</label>
+        <select class="form-select" id="InspectionId" name="InspectionId" required>
+            <option value="">Select</option>
+            @foreach (var i in ViewBag.Inspections ?? new List<dynamic>())
+            {
+                <option value="@i.Value">@i.Text</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="DueDate" class="form-label">Due Date</label>
+        <input type="date" class="form-control" id="DueDate" name="DueDate" required>
+    </div>
+    <div class="mb-3">
+        <label for="Status" class="form-label">Status</label>
+        <select class="form-select" id="Status" name="Status" required>
+            <option value="">Select</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/FollowUps" class="btn btn-secondary">Cancel</a>
+</form>

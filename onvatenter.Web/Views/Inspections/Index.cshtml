@@ -1,0 +1,35 @@
+@model IEnumerable<Inspection>
+@{
+    ViewData["Title"] = "Inspections";
+}
+
+<h1>Inspections</h1>
+<a href="/Inspections/Create" class="btn btn-primary mb-3">Add New</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Premises</th>
+            <th>Date</th>
+            <th>Score</th>
+            <th>Outcome</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model ?? new List<Inspection>())
+        {
+            <tr>
+                <td>@i.Premises?.Name</td>
+                <td>@i.InspectionDate.ToString("yyyy-MM-dd")</td>
+                <td>@i.Score</td>
+                <td>@i.Outcome</td>
+                <td>
+                    <a href="/Inspections/Details/@i.Id" class="btn btn-sm btn-info">View</a>
+                    <a href="/Inspections/Edit/@i.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="/Inspections/Delete/@i.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

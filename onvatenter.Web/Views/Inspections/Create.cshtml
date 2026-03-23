@@ -1,0 +1,42 @@
+@model Inspection
+@{
+    ViewData["Title"] = "Create Inspection";
+}
+
+<h1>Create Inspection</h1>
+
+<form method="post">
+    <div class="mb-3">
+        <label for="PremisesId" class="form-label">Premises</label>
+        <select class="form-select" id="PremisesId" name="PremisesId" required>
+            <option value="">Select</option>
+            @foreach (var p in ViewBag.Premises ?? new List<dynamic>())
+            {
+                <option value="@p.Value">@p.Text</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="InspectionDate" class="form-label">Date</label>
+        <input type="date" class="form-control" id="InspectionDate" name="InspectionDate" required>
+    </div>
+    <div class="mb-3">
+        <label for="Score" class="form-label">Score</label>
+        <input type="number" class="form-control" id="Score" name="Score" min="0" max="100" required>
+    </div>
+    <div class="mb-3">
+        <label for="Outcome" class="form-label">Outcome</label>
+        <select class="form-select" id="Outcome" name="Outcome" required>
+            <option value="">Select</option>
+            <option value="Pass">Pass</option>
+            <option value="Pass with Observations">Pass with Observations</option>
+            <option value="Fail">Fail</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="Notes" class="form-label">Notes</label>
+        <textarea class="form-control" id="Notes" name="Notes" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/Inspections" class="btn btn-secondary">Cancel</a>
+</form>
