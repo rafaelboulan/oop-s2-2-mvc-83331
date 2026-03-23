@@ -22,10 +22,10 @@ jobs:
       run: dotnet restore
 
     - name: Build (Release)
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build onvatenter.sln --configuration Release --no-restore
 
     - name: Run tests
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      run: dotnet test onvatenter.Tests/onvatenter.Tests.csproj --configuration Release --no-build --verbosity normal
 
     - name: Publish
-      run: dotnet publish onvatenter/onvatenter.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish onvatenter.Web/onvatenter.Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
