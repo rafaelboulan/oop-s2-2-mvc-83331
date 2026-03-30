@@ -14,17 +14,17 @@ setlocal enabledelayedexpansion
 
 REM 1. Clean
 echo [1/5] Cleaning...
-call dotnet clean >nul 2>&1
+call dotnet clean onvatenter.sln >nul 2>&1
 echo ? Cleaned
 
 REM 2. Restore
 echo [2/5] Restoring dependencies...
-call dotnet restore >nul 2>&1
+call dotnet restore onvatenter.sln >nul 2>&1
 echo ? Restored
 
 REM 3. Build Debug
 echo [3/5] Building (Debug)...
-call dotnet build --configuration Debug >nul 2>&1
+call dotnet build onvatenter.sln --configuration Debug >nul 2>&1
 if %errorlevel% neq 0 (
     echo ? Build failed!
     exit /b 1
@@ -33,7 +33,7 @@ echo ? Built
 
 REM 4. Run Tests
 echo [4/5] Running 9 tests...
-call dotnet test onvatenter.Tests --configuration Debug --verbosity quiet
+call dotnet test onvatenter.sln --configuration Debug --verbosity quiet
 if %errorlevel% neq 0 (
     echo ? Tests failed!
     exit /b 1
@@ -42,7 +42,7 @@ echo ? Tests passed
 
 REM 5. Build Release
 echo [5/5] Building (Release) for deployment...
-call dotnet build --configuration Release >nul 2>&1
+call dotnet build onvatenter.sln --configuration Release >nul 2>&1
 if %errorlevel% neq 0 (
     echo ? Release build failed!
     exit /b 1

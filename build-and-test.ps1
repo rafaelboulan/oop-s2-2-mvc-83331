@@ -12,27 +12,27 @@ Write-Host ""
 try {
     # 1. Clean
     Write-Host "[1/5] Cleaning..." -ForegroundColor Cyan
-    dotnet clean | Out-Null
+    dotnet clean onvatenter.sln | Out-Null
     Write-Host "? Cleaned" -ForegroundColor Green
 
     # 2. Restore
     Write-Host "[2/5] Restoring dependencies..." -ForegroundColor Cyan
-    dotnet restore | Out-Null
+    dotnet restore onvatenter.sln | Out-Null
     Write-Host "? Restored" -ForegroundColor Green
 
     # 3. Build Debug
     Write-Host "[3/5] Building (Debug)..." -ForegroundColor Cyan
-    dotnet build --configuration Debug | Out-Null
+    dotnet build onvatenter.sln --configuration Debug | Out-Null
     Write-Host "? Built" -ForegroundColor Green
 
     # 4. Run Tests
     Write-Host "[4/5] Running 9 tests..." -ForegroundColor Cyan
-    $testResult = dotnet test onvatenter.Tests --configuration Debug --verbosity quiet
+    $testResult = dotnet test onvatenter.sln --configuration Debug --verbosity quiet
     Write-Host "? Tests passed" -ForegroundColor Green
 
     # 5. Build Release
     Write-Host "[5/5] Building (Release) for deployment..." -ForegroundColor Cyan
-    dotnet build --configuration Release | Out-Null
+    dotnet build onvatenter.sln --configuration Release | Out-Null
     Write-Host "? Release built" -ForegroundColor Green
 
     Write-Host ""
