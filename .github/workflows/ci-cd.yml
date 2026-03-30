@@ -28,22 +28,24 @@ jobs:
         dotnet-version: '9.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore onvatenter.sln
 
     - name: Build (Release)
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build onvatenter.sln --configuration Release --no-restore
 
     - name: Run tests with coverage
       run: |
-        dotnet test onvatenter.Tests/onvatenter.Tests.csproj \
+        dotnet test onvatenter.sln \
           --configuration Release \
           --verbosity normal \
           --logger "console;verbosity=detailed" \
+          --no-build \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
           /p:CoverletOutput=./coverage/
 
     - name: Generate HTML coverage report
+      if: success()
       run: |
         mkdir -p ./coverage-reports
         dotnet tool install -g ReportGenerator
@@ -52,6 +54,7 @@ jobs:
           -reporttypes:Html
 
     - name: Create deployment report
+      if: success()
       run: |
         mkdir -p ./coveragereport
         cp -r ./coverage-reports/* ./coveragereport/ 2>/dev/null || true
@@ -92,7 +95,7 @@ jobs:
         EOF
 
     - name: Upload Pages artifact
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' && success()
       uses: actions/upload-pages-artifact@v3
       with:
         path: ./coveragereport
@@ -100,7 +103,7 @@ jobs:
   deploy:
     needs: build-test-coverage
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && success()
 
     environment:
       name: github-pages
