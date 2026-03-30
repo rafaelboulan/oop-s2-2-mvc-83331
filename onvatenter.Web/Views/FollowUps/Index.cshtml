@@ -1,12 +1,14 @@
 @model IEnumerable<FollowUp>
+
 @{
     ViewData["Title"] = "Follow-ups";
 }
 
 <h1>Follow-ups</h1>
+
 <a href="/FollowUps/Create" class="btn btn-primary mb-3">Add New</a>
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>Inspection</th>
@@ -15,13 +17,40 @@
             <th>Actions</th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var f in Model ?? new List<FollowUp>())
         {
             <tr>
-                <td>@f.Inspection?.Id</td>
-                <td>@f.DueDate.ToString("yyyy-MM-dd")</td>
-                <td>@f.Status</td>
+                <td>
+                    <span class="badge bg-dark">FollowUp #@f.Id</span><br />
+
+                    <small class="text-muted">
+                        Inspection #@f.InspectionId
+                    </small><br />
+
+                    <strong>
+                        @(f.Inspection?.Premises?.Name ?? "Unknown premises")
+                    </strong>
+                </td>
+
+                <td>
+                    @f.DueDate.ToString("yyyy-MM-dd")
+                </td>
+
+                <td>
+                    @if (f.Status == "Completed")
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">
+                            @f.Status
+                        </span>
+                    }
+                </td>
+
                 <td>
                     <a href="/FollowUps/Details/@f.Id" class="btn btn-sm btn-info">View</a>
                     <a href="/FollowUps/Edit/@f.Id" class="btn btn-sm btn-warning">Edit</a>

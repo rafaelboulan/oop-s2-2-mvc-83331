@@ -1,42 +1,47 @@
 @model Inspection
+
 @{
     ViewData["Title"] = "Create Inspection";
 }
 
 <h1>Create Inspection</h1>
 
-<form method="post">
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
     <div class="mb-3">
-        <label for="PremisesId" class="form-label">Premises</label>
-        <select class="form-select" id="PremisesId" name="PremisesId" required>
-            <option value="">Select</option>
-            @foreach (var p in ViewBag.Premises ?? new List<dynamic>())
-            {
-                <option value="@p.Value">@p.Text</option>
-            }
+        <label asp-for="PremisesId" class="form-label">Premises</label>
+        <select asp-for="PremisesId" class="form-select" asp-items="ViewBag.Premises" required>
+            <option value="" disabled selected>Select a premises</option>
         </select>
     </div>
+
     <div class="mb-3">
-        <label for="InspectionDate" class="form-label">Date</label>
-        <input type="date" class="form-control" id="InspectionDate" name="InspectionDate" required>
+        <label asp-for="InspectionDate" class="form-label">Date</label>
+        <input asp-for="InspectionDate" type="date" class="form-control" required />
     </div>
+
     <div class="mb-3">
-        <label for="Score" class="form-label">Score</label>
-        <input type="number" class="form-control" id="Score" name="Score" min="0" max="100" required>
+        <label asp-for="Score" class="form-label">Score</label>
+        <input asp-for="Score" type="number" class="form-control" min="0" max="100" required />
     </div>
+
     <div class="mb-3">
-        <label for="Outcome" class="form-label">Outcome</label>
-        <select class="form-select" id="Outcome" name="Outcome" required>
+        <label asp-for="Outcome" class="form-label">Outcome</label>
+        <select asp-for="Outcome" class="form-select" required>
             <option value="">Select</option>
             <option value="Pass">Pass</option>
             <option value="Pass with Observations">Pass with Observations</option>
             <option value="Fail">Fail</option>
         </select>
     </div>
+
     <div class="mb-3">
-        <label for="Notes" class="form-label">Notes</label>
-        <textarea class="form-control" id="Notes" name="Notes" rows="3"></textarea>
+        <label asp-for="Notes" class="form-label">Notes</label>
+        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
     </div>
+
     <button type="submit" class="btn btn-primary">Create</button>
-    <a href="/Inspections" class="btn btn-secondary">Cancel</a>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
 </form>

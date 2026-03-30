@@ -78,6 +78,16 @@ namespace onvatenter.Web.Controllers
                 _db.SaveChanges();
                 return RedirectToAction("Details", new { id = inspection.Id });
             }
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                Console.WriteLine("MODELSTATE ERRORS:");
+                Console.WriteLine(string.Join("\n", errors));
+            }
 
             var premises = _db.Premises.OrderBy(p => p.Name).ToList();
             ViewBag.Premises = new SelectList(premises, "Id", "Name", inspection.PremisesId);

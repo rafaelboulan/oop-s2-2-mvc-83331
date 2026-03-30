@@ -7,7 +7,14 @@
 
 <div class="card">
     <div class="card-body">
-        <p><strong>Inspection:</strong> @Model.Inspection?.Id</p>
+        <p>
+            <strong>Inspection:</strong>
+            #@Model.InspectionId
+            <br />
+            <span class="text-muted">
+                @Model.Inspection?.Premises?.Name
+            </span>
+        </p>
         <p><strong>Due Date:</strong> @Model.DueDate.ToString("yyyy-MM-dd")</p>
         <p><strong>Status:</strong> @Model.Status</p>
         @if (Model.ClosedDate.HasValue)

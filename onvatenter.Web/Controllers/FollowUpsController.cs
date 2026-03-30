@@ -18,17 +18,12 @@ namespace onvatenter.Web.Controllers
         public IActionResult Index()
         {
             var followUps = _db.FollowUps
-                .Include(f => f.Inspection)
-                .OrderBy(f => f.DueDate)
-                .ToList();
+    .Include(f => f.Inspection)
+    .ThenInclude(i => i.Premises)
+    .OrderBy(f => f.DueDate)
+    .ToList();
 
-            ViewBag.Breadcrumbs = new List<dynamic>
-            {
-                new { Name = "Home", Url = "/" },
-                new { Name = "Follow-ups", Url = (string)null }
-            };
-
-            return View(followUps);
+return View(followUps);
         }
 
         // GET: /FollowUps/{id}
@@ -56,7 +51,11 @@ namespace onvatenter.Web.Controllers
                 .Include(i => i.Premises)
                 .OrderByDescending(i => i.InspectionDate)
                 .ToList();
-            ViewBag.Inspections = new SelectList(inspections, "Id", "Notes");
+            ViewBag.Inspections = new SelectList(
+    inspections,
+    "Id",
+    "Premises.Name"
+);
 
             ViewBag.Breadcrumbs = new List<dynamic>
             {
@@ -133,7 +132,12 @@ namespace onvatenter.Web.Controllers
                         .Include(i => i.Premises)
                         .OrderByDescending(i => i.InspectionDate)
                         .ToList();
-                    ViewBag.Inspections = new SelectList(inspections, "Id", "Notes", followUp.InspectionId);
+                    ViewBag.Inspections = inspections
+     .Select(i => new SelectListItem
+     {
+         Value = i.Id.ToString(),
+         Text = $"#{i.Id} - {i.Premises.Name}"
+     }).ToList();
                     return View(followUp);
                 }
             }

@@ -104,7 +104,7 @@ namespace onvatenter.Models.Data
         public string Notes { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public Premises Premises { get; set; }
+        public Premises? Premises { get; set; }
         public ICollection<FollowUp> FollowUps { get; set; } = new List<FollowUp>();
     }
 
@@ -117,6 +117,6 @@ namespace onvatenter.Models.Data
         public DateTime? ClosedDate { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public Inspection Inspection { get; set; }
+        public Inspection? Inspection { get; set; }
     }
 }

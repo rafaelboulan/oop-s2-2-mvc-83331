@@ -5,29 +5,39 @@
 
 <h1>Create Follow-up</h1>
 
-<form method="post">
+<form asp-action="Create" method="post">
+
     <div class="mb-3">
-        <label for="InspectionId" class="form-label">Inspection</label>
-        <select class="form-select" id="InspectionId" name="InspectionId" required>
+        <label asp-for="InspectionId" class="form-label">Inspection</label>
+
+        <select asp-for="InspectionId"
+                class="form-select"
+                asp-items="ViewBag.Inspections">
             <option value="">Select</option>
-            @foreach (var i in ViewBag.Inspections ?? new List<dynamic>())
-            {
-                <option value="@i.Value">@i.Text</option>
-            }
         </select>
+
+        <span asp-validation-for="InspectionId" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-        <label for="DueDate" class="form-label">Due Date</label>
-        <input type="date" class="form-control" id="DueDate" name="DueDate" required>
+        <label asp-for="DueDate" class="form-label"></label>
+        <input asp-for="DueDate" type="date" class="form-control" />
+        <span asp-validation-for="DueDate" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-        <label for="Status" class="form-label">Status</label>
-        <select class="form-select" id="Status" name="Status" required>
+        <label asp-for="Status" class="form-label"></label>
+
+        <select asp-for="Status" class="form-select">
             <option value="">Select</option>
             <option value="Pending">Pending</option>
             <option value="Completed">Completed</option>
         </select>
+
+        <span asp-validation-for="Status" class="text-danger"></span>
     </div>
+
     <button type="submit" class="btn btn-primary">Create</button>
     <a href="/FollowUps" class="btn btn-secondary">Cancel</a>
+
 </form>
