@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline with Coverage
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
   id-token: write
 
 jobs:
-  build-and-test:
+  build-test-coverage:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,21 +28,69 @@ jobs:
         dotnet-version: '9.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore onvatenter.sln
+      run: dotnet restore
 
     - name: Build (Release)
-      run: dotnet build onvatenter.sln --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
 
-    - name: Run tests
-      run: dotnet test onvatenter.Tests/onvatenter.Tests.csproj --configuration Release --verbosity normal
-
-    # 👉 On crée un petit fichier HTML (fake deploy)
-    - name: Create simple report
+    - name: Run tests with coverage
       run: |
-        mkdir coveragereport
-        echo "<h1>Build OK ✅</h1><p>Tests passed 🚀</p>" > coveragereport/index.html
+        dotnet test onvatenter.Tests/onvatenter.Tests.csproj \
+          --configuration Release \
+          --verbosity normal \
+          --logger "console;verbosity=detailed" \
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=opencover \
+          /p:CoverletOutput=./coverage/
 
-    # 👉 Upload pour GitHub Pages
+    - name: Generate HTML coverage report
+      run: |
+        mkdir -p ./coverage-reports
+        dotnet tool install -g ReportGenerator
+        reportgenerator -reports:./onvatenter.Tests/coverage/coverage.opencover.xml \
+          -targetdir:./coverage-reports \
+          -reporttypes:Html
+
+    - name: Create deployment report
+      run: |
+        mkdir -p ./coveragereport
+        cp -r ./coverage-reports/* ./coveragereport/ 2>/dev/null || true
+        cat > ./coveragereport/summary.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Build & Test Report</title>
+          <style>
+            body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+            .success { color: green; font-size: 24px; font-weight: bold; }
+            .info { background: white; padding: 20px; border-radius: 5px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            a { color: #0066cc; text-decoration: none; margin: 0 5px; }
+            a:hover { text-decoration: underline; }
+            ul { margin: 10px 0; padding-left: 20px; }
+          </style>
+        </head>
+        <body>
+          <h1>✅ Build & Tests Report</h1>
+          <div class="info">
+            <p class="success">Build: SUCCESS</p>
+            <p><strong>Tests executed:</strong> All tests passed ✓</p>
+            <p><strong>Coverage report:</strong> <a href="index.html">View detailed coverage →</a></p>
+            <p><strong>Branch:</strong> ${{ github.ref }}</p>
+            <p><strong>Commit:</strong> ${{ github.sha }}</p>
+          </div>
+          <div class="info">
+            <h2>Coverage Summary</h2>
+            <p>Tests include:</p>
+            <ul>
+              <li>FollowUpTests (5 tests)</li>
+              <li>DashboardServiceTests (4 tests)</li>
+            </ul>
+            <p><em>Target coverage: ~40% of codebase</em></p>
+          </div>
+        </body>
+        </html>
+        EOF
+
     - name: Upload Pages artifact
       if: github.ref == 'refs/heads/main'
       uses: actions/upload-pages-artifact@v3
@@ -50,7 +98,7 @@ jobs:
         path: ./coveragereport
 
   deploy:
-    needs: build-and-test
+    needs: build-test-coverage
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 

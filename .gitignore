@@ -46,3 +46,12 @@ packages/
 
 # dotnet
 .dotnet/
+
+# Code Coverage
+coverage/
+coverage-reports/
+opencover/
+.codecov.yml
+
+# Test Results
+TestResults/
