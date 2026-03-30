@@ -1,203 +1,86 @@
-name: CI/CD Pipeline with Coverage
+name: Test & Publish Coverage (xUnit + ReportGenerator)
 
 on:
+  workflow_dispatch: 
   push:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
 
+# Avoid overlapping Pages deployments
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
+# Required for GitHub Pages deploy
 permissions:
   contents: read
   pages: write
   id-token: write
 
+env:
+  DOTNET_VERSION: "9.0.x"
+  TEST_PROJECT: "onvatenter.Tests/onvatenter.Tests.csproj"
+
 jobs:
-  build-test-coverage:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Restore dependencies
-      run: dotnet restore onvatenter.sln
+      - name: Restore
+        run: dotnet restore onvatenter.sln
 
-    - name: Build (Release)
-      run: dotnet build onvatenter.sln --configuration Release --no-restore
+      - name: Build
+        run: dotnet build onvatenter.sln --no-restore -c Release
 
-    - name: Run tests with coverage
-      run: |
-        dotnet test onvatenter.sln \
-          --configuration Release \
-          --verbosity normal \
-          --no-build \
-          /p:CollectCoverage=true \
-          /p:CoverletOutputFormat=opencover \
-          /p:CoverletOutput=./coverage/
+      # xUnit tests + Coverlet data collector
+      - name: Test (xUnit) and collect coverage
+        run: >
+          dotnet test ${{ env.TEST_PROJECT }} -c Release --no-build
+          --collect:"XPlat Code Coverage"
+          --logger "trx;LogFileName=test-results.trx"
 
-    - name: Create coverage report directory
-      if: success()
-      run: mkdir -p ./coveragereport
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
-    - name: Create simple success report
-      if: success()
-      run: |
-        cat > ./coveragereport/index.html << 'EOF'
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Build & Test Report</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              min-height: 100vh;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 20px;
-            }
-            .container {
-              background: white;
-              border-radius: 10px;
-              box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-              max-width: 600px;
-              width: 100%;
-              padding: 40px;
-              text-align: center;
-            }
-            h1 { color: #333; margin-bottom: 20px; font-size: 32px; }
-            .status-badge {
-              display: inline-block;
-              background: #4CAF50;
-              color: white;
-              padding: 10px 20px;
-              border-radius: 5px;
-              font-size: 18px;
-              font-weight: bold;
-              margin: 20px 0;
-            }
-            .stats {
-              background: #f5f5f5;
-              padding: 20px;
-              border-radius: 5px;
-              margin: 20px 0;
-              text-align: left;
-            }
-            .stats-item {
-              display: flex;
-              justify-content: space-between;
-              padding: 10px 0;
-              border-bottom: 1px solid #eee;
-            }
-            .stats-item:last-child { border-bottom: none; }
-            .stats-label { font-weight: bold; color: #666; }
-            .stats-value { color: #333; }
-            .success { color: #4CAF50; }
-            .info-box {
-              background: #e3f2fd;
-              border-left: 4px solid #2196F3;
-              padding: 15px;
-              margin: 20px 0;
-              border-radius: 3px;
-              text-align: left;
-            }
-            .info-box h3 { color: #1976D2; margin-bottom: 10px; }
-            .info-box p { color: #555; line-height: 1.6; }
-            .info-box ul { margin-left: 20px; margin-top: 10px; }
-            .info-box li { margin: 5px 0; color: #555; }
-            footer { 
-              margin-top: 30px;
-              padding-top: 20px;
-              border-top: 1px solid #eee;
-              color: #999;
-              font-size: 12px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <h1>✅ Build & Tests Report</h1>
-            
-            <div class="status-badge">BUILD SUCCESSFUL</div>
-            
-            <div class="stats">
-              <div class="stats-item">
-                <span class="stats-label">Total Tests:</span>
-                <span class="stats-value success">9 ✓</span>
-              </div>
-              <div class="stats-item">
-                <span class="stats-label">Passed:</span>
-                <span class="stats-value success">9/9</span>
-              </div>
-              <div class="stats-item">
-                <span class="stats-label">Failed:</span>
-                <span class="stats-value">0</span>
-              </div>
-              <div class="stats-item">
-                <span class="stats-label">Coverage Target:</span>
-                <span class="stats-value">~40%</span>
-              </div>
-              <div class="stats-item">
-                <span class="stats-label">Configuration:</span>
-                <span class="stats-value">Release</span>
-              </div>
-            </div>
+      - name: Generate HTML coverage report
+        run: |
+          export PATH="$PATH:~/.dotnet/tools"
+          reportgenerator \
+            -reports:**/coverage.cobertura.xml \
+            -targetdir:coveragereport \
+            -reporttypes:Html
 
-            <div class="info-box">
-              <h3>📊 Test Coverage</h3>
-              <p>Tests include:</p>
-              <ul>
-                <li>FollowUpTests (5 tests)</li>
-                <li>DashboardServiceTests (4 tests)</li>
-              </ul>
-            </div>
+      # Make the HTML report available as a workflow artifact on PRs too
+      - name: Upload coverage as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coveragereport
 
-            <div class="info-box">
-              <h3>ℹ️ Build Information</h3>
-              <ul>
-                <li><strong>Branch:</strong> main</li>
-                <li><strong>Framework:</strong> .NET 9</li>
-                <li><strong>CI/CD:</strong> GitHub Actions</li>
-              </ul>
-            </div>
-
-            <footer>
-              <p>Report generated by GitHub Actions</p>
-              <p><a href="https://github.com/rafaelboulan/oop-s2-2-mvc-83331" style="color: #2196F3;">View Repository</a></p>
-            </footer>
-          </div>
-        </body>
-        </html>
-        EOF
-
-    - name: Upload Pages artifact
-      if: github.ref == 'refs/heads/main' && success()
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ./coveragereport
+      # Only package for Pages when pushing to main
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./coveragereport
 
   deploy:
-    needs: build-test-coverage
+    # Only deploy on push to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && success()
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
