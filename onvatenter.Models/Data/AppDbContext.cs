@@ -66,6 +66,9 @@ namespace onvatenter.Models.Data
                 });
             }
 
+            var random = new Random(42);
+            var baseDate = new DateTime(2024, 1, 1);
+
             // Seed 10 Follow-ups
             for (int i = 1; i <= 10; i++)
             {
@@ -73,10 +76,16 @@ namespace onvatenter.Models.Data
                 {
                     Id = i,
                     InspectionId = i,
-                    DueDate = DateTime.Now.AddDays(30),
+
+                    DueDate = baseDate.AddDays(random.Next(-10, 30)),
+
                     Status = i % 2 == 0 ? "Pending" : "Completed",
-                    ClosedDate = i % 2 == 0 ? null : DateTime.Now,
-                    CreatedAt = DateTime.Now.AddDays(-(i * 5))
+
+                    ClosedDate = i % 2 == 0
+                        ? null
+                        : baseDate.AddDays(random.Next(-20, 0)),
+
+                    CreatedAt = baseDate.AddDays(-(i * 5))
                 });
             }
         }
@@ -118,5 +127,12 @@ namespace onvatenter.Models.Data
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public Inspection? Inspection { get; set; }
+        public bool IsOverdue
+        {
+            get
+            {
+                return DueDate < DateTime.Now && Status != "Completed";
+            }
+        }
     }
 }

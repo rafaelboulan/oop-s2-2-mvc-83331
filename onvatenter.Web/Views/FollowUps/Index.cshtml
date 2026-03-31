@@ -39,7 +39,11 @@
                 </td>
 
                 <td>
-                    @if (f.Status == "Completed")
+                    @if (f.IsOverdue)
+                    {
+                        <span class="badge bg-danger">Overdue</span>
+                    }
+                    else if (f.Status == "Completed")
                     {
                         <span class="badge bg-success">Completed</span>
                     }
@@ -49,7 +53,7 @@
                             @f.Status
                         </span>
                     }
-                </td>
+                </td>s
 
                 <td>
                     <a href="/FollowUps/Details/@f.Id" class="btn btn-sm btn-info">View</a>
