@@ -1,10 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using onvatenter.Models.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace onvatenter.Web.Controllers
 {
+    [Authorize(Roles = "Admin,Inspector")]
     public class InspectionsController : Controller
     {
         private readonly AppDbContext _db;

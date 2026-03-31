@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using onvatenter.Models.Data;
 
 namespace onvatenter.Web.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class FollowUpsController : Controller
     {
         private readonly AppDbContext _db;
